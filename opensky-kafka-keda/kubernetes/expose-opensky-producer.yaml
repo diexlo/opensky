@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensky-producer
+  namespace: opensky
+  labels:
+    app: opensky-producer
+spec:
+  selector:
+    app: opensky-producer
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensky-consumer
+  namespace: opensky
+  labels:
+    app: opensky-consumer
+spec:
+  selector:
+    app: opensky-consumer
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP

@@ -1,0 +1,23 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: opensky-consumer-scaler
+  namespace: opensky
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: opensky-consumer
+  pollingInterval: 15
+  cooldownPeriod: 60
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  # Eliminar la sección fallback ya que está causando problemas
+  triggers:
+  - type: kafka
+    metadata:
+      bootstrapServers: opensky-cluster-kafka-bootstrap.opensky.svc:9092
+      consumerGroup: opensky-consumers
+      topic: flight-states
+      lagThreshold: "100"
+      offsetResetPolicy: latest

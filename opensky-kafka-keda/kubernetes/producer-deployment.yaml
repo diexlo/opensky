@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opensky-producer
+  namespace: opensky
+  labels:
+    app: opensky-producer
+    component: producer
+spec:
+  selector:
+    matchLabels:
+      app: opensky-producer
+  template:
+    metadata:
+      labels:
+        app: opensky-producer
+        component: producer
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: producer
+        image: diexlo/opensky-producer:1.0
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 250m
+            memory: 256Mi
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+        env:
+        - name: KAFKA_CLIENT_ID
+          value: "opensky-producer"
+        - name: KAFKA_BROKERS
+          valueFrom:
+            configMapKeyRef:
+              name: opensky-config
+              key: KAFKA_BROKERS
+        - name: KAFKA_FLIGHT_TOPIC
+          valueFrom:
+            configMapKeyRef:
+              name: opensky-config
+              key: KAFKA_FLIGHT_TOPIC
+        # Variables importantes para control de tasa y métricas
+        - name: OPENSKY_REQUEST_INTERVAL
+          value: "60000"
+        - name: OPENSKY_API_TIMEOUT
+          value: "10000"
+        - name: METRICS_ENABLED
+          value: "true"
+        ports:
+        - containerPort: 8080
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30

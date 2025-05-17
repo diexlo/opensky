@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opensky-consumer
+  namespace: opensky
+  labels:
+    app: opensky-consumer
+    component: consumer
+spec:
+  selector:
+    matchLabels:
+      app: opensky-consumer
+  template:
+    metadata:
+      labels:
+        app: opensky-consumer
+        component: consumer
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: consumer
+        image: diexlo/opensky-consumer:1.0
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 250m
+            memory: 256Mi
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+        env:
+        - name: KAFKA_CLIENT_ID
+          value: "opensky-consumer"
+        - name: KAFKA_GROUP_ID
+          value: "opensky-consumers"
+        - name: KAFKA_BROKERS
+          valueFrom:
+            configMapKeyRef:
+              name: opensky-config
+              key: KAFKA_BROKERS
+        - name: KAFKA_FLIGHT_TOPIC
+          valueFrom:
+            configMapKeyRef:
+              name: opensky-config
+              key: KAFKA_FLIGHT_TOPIC
+        # Variables importantes para escalabilidad e idempotencia
+        - name: KAFKA_AUTO_COMMIT
+          value: "false"
+        - name: PROCESS_CONCURRENCY
+          value: "4"
+        - name: IDEMPOTENCY_ENABLED
+          value: "true"
+        - name: MAX_PROCESSING_TIME_MS
+          value: "5000"
+        ports:
+        - containerPort: 8080
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30

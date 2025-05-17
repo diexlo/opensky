@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opensky-grafana-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "true"
+data:
+  opensky-kafka-dashboard.json: '{{opensky-kafka-dashboard}}'

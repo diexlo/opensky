@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opensky-config
+  namespace: opensky
+data:
+  # Configuración común
+  LOG_LEVEL: "info"
+  KAFKA_BROKERS: "opensky-cluster-kafka-bootstrap.opensky.svc:9092"
+  KAFKA_FLIGHT_TOPIC: "flight-states"
+  
+  # Configuración del productor con valores ajustados para respetar rate limits
+  PRODUCER_OPENSKY_API_URL: "https://opensky-network.org/api"
+  
+  # Intervalo entre solicitudes: 60 segundos por defecto para evitar error 429
+  PRODUCER_OPENSKY_REQUEST_INTERVAL: "60000"
+  
+  PRODUCER_OPENSKY_MAX_RETRIES: "3"
+  PRODUCER_OPENSKY_TIMEOUT: "10000"
+  
+  # Flag para activar programación dinámica con backoff adaptativo
+  USE_DYNAMIC_SCHEDULING: "true"
+  
+  # Filtrado geográfico opcional para reducir el volumen de datos
+  # Desactivado por defecto, activar estableciendo en "true"
+  OPENSKY_BOUNDS_ENABLED: "false"
+  
+  # Ejemplo de límites para Europa (descomentar y ajustar si se desea activar)
+  # OPENSKY_BOUNDS_LAMIN: "36.0"
+  # OPENSKY_BOUNDS_LOMIN: "-10.0"
+  # OPENSKY_BOUNDS_LAMAX: "60.0"
+  # OPENSKY_BOUNDS_LOMAX: "25.0"
+  
+  # Configuración del consumidor
+  CONSUMER_BATCH_SIZE: "100"
+  CONSUMER_FLUSH_INTERVAL_MS: "5000"
+  CONSUMER_STATS_INTERVAL_MS: "30000"
+  
+  # Configuración de health check
+  HEALTH_STATUS_FILE: "/app/health/status"
+  # Agregar configuración para métricas Prometheus
+  METRICS_ENABLED: "true"
+  METRICS_PATH: "/metrics"
+  METRICS_PORT: "8080"

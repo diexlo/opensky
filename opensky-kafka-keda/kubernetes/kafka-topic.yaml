@@ -1,0 +1,15 @@
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: flight-states
+  namespace: opensky
+  labels:
+    strimzi.io/cluster: opensky-cluster
+spec:
+  partitions: 12
+  replicas: 3
+  config:
+    retention.ms: 86400000     # 24 horas
+    segment.bytes: 107374182   # 100 MB
+    cleanup.policy: delete     # Política de limpieza

@@ -1,0 +1,20 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: opensky-producer-scaler
+  namespace: opensky
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: opensky-producer
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 1
+  maxReplicaCount: 3
+  # Usar solo CPU como trigger para empezar (más sencillo)
+  triggers:
+  - type: cpu
+    metadata:
+      type: Utilization
+      value: "70"

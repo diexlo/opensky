@@ -1,0 +1,41 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: opensky-keda-alerts
+  namespace: monitoring
+  labels:
+    prometheus: k8s
+    role: alert-rules
+spec:
+  groups:
+  - name: keda.scaling.rules
+    rules:
+    - alert: KedaConsumerLagHigh
+      expr: sum(kafka_consumergroup_lag{consumergroup="opensky-consumers"}) > 1000
+      for: 5m
+      labels:
+        severity: warning
+        application: opensky
+      annotations:
+        summary: "High Kafka consumer lag detected"
+        description: "Consumer group opensky-consumers has a lag of {{ $value }} messages, which has been above threshold for 5 minutes."
+    
+    - alert: KedaConsumerLagCritical
+      expr: sum(kafka_consumergroup_lag{consumergroup="opensky-consumers"}) > 5000
+      for: 10m
+      labels:
+        severity: critical
+        application: opensky
+      annotations:
+        summary: "Critical Kafka consumer lag detected"
+        description: "Consumer group opensky-consumers has a lag of {{ $value }} messages, which has been above threshold for 10 minutes."
+    
+    - alert: OpenSkyRateLimitErrors
+      expr: sum(increase(opensky_api_errors_total{error_type="rate_limit"}[15m])) > 50
+      for: 15m
+      labels:
+        severity: warning
+        application: opensky
+      annotations:
+        summary: "High rate of OpenSky API rate limit errors"
+        description: "{{ $value }} rate limit errors detected in the last 15 minutes. Consider adjusting the producer scaling or API call frequency."
