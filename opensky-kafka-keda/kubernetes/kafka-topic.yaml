@@ -3,7 +3,7 @@ apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
   name: flight-states
-  namespace: opensky
+  namespace: kafka
   labels:
     strimzi.io/cluster: opensky-cluster
 spec:

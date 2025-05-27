@@ -16,7 +16,7 @@ spec:
   triggers:
   - type: kafka
     metadata:
-      bootstrapServers: opensky-cluster-kafka-bootstrap.opensky.svc:9092
+      bootstrapServers: opensky-cluster-kafka-bootstrap.kafka.svc:9092
       consumerGroup: opensky-consumers
       topic: flight-states
       lagThreshold: "100"

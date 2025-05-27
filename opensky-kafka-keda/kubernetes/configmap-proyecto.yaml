@@ -7,9 +7,9 @@ metadata:
 data:
   # Configuración común
   LOG_LEVEL: "info"
-  KAFKA_BROKERS: "opensky-cluster-kafka-bootstrap.opensky.svc:9092"
+  KAFKA_BROKERS: "opensky-cluster-kafka-bootstrap.kafka.svc:9092"
   KAFKA_FLIGHT_TOPIC: "flight-states"
-  
+
   # Configuración del productor con valores ajustados para respetar rate limits
   PRODUCER_OPENSKY_API_URL: "https://opensky-network.org/api"
   
